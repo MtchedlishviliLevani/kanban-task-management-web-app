@@ -4,28 +4,24 @@ import GlobalStyle from './styles/GlobalStyle'
 import theme from './styles/Theme'
 import Header from './assets/components/Header'
 import styled from 'styled-components'// import { MediaQueryBreakPoints } from '.'
-// import { useDispatch, useSelector } from 'react-redux'
-// import { RootState } from './store'
-// import { increase } from './assets/features/counter/counterSlice'
-// import { changeMode } from './assets/features/theme/themeModeSlice'
-// import Container from './assets/components/Container'
-// import breakPoints from './assets/utility/BreakPoints'
+import Aside from './assets/components/Aside'
+import useData from './store/useBoard'
 
+interface HeaderProps {
+  isDarkMode: boolean
+}
 function App() {
-  // const dispatch = useDispatch();
-  // const count = useSelector((state: RootState) => state.counter.value);
-  // const theme1 = useSelector((state: RootState) => state.changeTheme.isDarkMode);
 
-
-
+  const { data, addBoard, isDarkMode, modeSwitcher } = useData();
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <button onClick={() => dispatch(changeMode())}>hello {count}</button> */}
       <GlobalStyle />
-
+      <button onClick={modeSwitcher}>{isDarkMode ? 2 : 3}</button>
       <Layout>
-        <Header />
+        <StyledHeader isDarkMode={isDarkMode}><Header /></StyledHeader>
+
+        <Aside />
       </Layout>
 
     </ThemeProvider>
@@ -37,6 +33,10 @@ const Layout = styled.div`
   width: 100%;
   height: 100vh;
 
+`
+
+const StyledHeader = styled.div<HeaderProps>`
+  background-color: ${({ isDarkMode }) => isDarkMode ? theme.allColors.themeColor.darkMode.bgColor : theme.allColors.themeColor.lightMode.bgColor};
 `
 
 

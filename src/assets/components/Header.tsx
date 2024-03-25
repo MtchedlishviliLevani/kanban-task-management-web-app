@@ -7,34 +7,37 @@ import breakPoints from "../utility/BreakPoints";
 import DropDownIcon from "../images/icon-chevron-down.svg";
 import DarkLogo from "../images/logo-dark.svg";
 import Container from "./Container";
-
+// import useData from "../../store/useBoard";
 
 function Header() {
-
+    // const { isDarkMode, modeSwitcher } = useData();
     return (
         <>
-            <Container>
-                <HEader>
-                    <div>
-                        <picture>
-                            {/* აქ სტეტით განვსაზღვრავთ, რომელი ლოგოა საჭირო */}
-                            {/* <source srcSet={LigthLogo} media="(min-width:768px)" /> */}
-                            <source srcSet={DarkLogo} media="(min-width:768px)" />
-                            <img src={MobileLogo} alt="" />
-                        </picture></div>
-                    <MainPartWrapper>
+            <Container >
+                <div>
+                    <HEader>
                         <div>
-                            <span>Platform Launch</span>
-                            <img src={DropDownIcon} alt="" />
-                        </div>
-                        <div>
-                            <AddBtnContainer>
-                                <img src={AddTaskIcon} alt="" /> <span>Add New Task</span>
+                            <picture>
+                                {/* აქ სტეტით განვსაზღვრავთ, რომელი ლოგოა საჭირო */}
+                                {/* <source srcSet={LigthLogo} media="(min-width:768px)" /> */}
+                                <source srcSet={DarkLogo} media="(min-width:768px)" />
+                                <img src={MobileLogo} alt="" />
+                            </picture></div>
+                        <MainPartWrapper>
+                            <div>
+                                <span>Platform Launch</span>
+                                <img src={DropDownIcon} alt="" />
+                            </div>
+                            <div>
+                                <AddBtnContainer>
+                                    <img src={AddTaskIcon} alt="" /> <span>Add New Task</span>
 
-                            </AddBtnContainer>
-                            <img src={EditIcon} alt="" />
-                        </div></MainPartWrapper>
-                </HEader></Container>
+                                </AddBtnContainer>
+                                <img src={EditIcon} alt="" />
+                            </div></MainPartWrapper>
+                    </HEader>
+                </div >
+            </Container>
             <BorderLine></BorderLine>
         </>
     );
