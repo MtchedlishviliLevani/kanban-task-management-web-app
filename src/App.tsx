@@ -6,9 +6,10 @@ import Header from './assets/components/Header'
 import styled from 'styled-components'// import { MediaQueryBreakPoints } from '.'
 import Aside from './assets/components/Aside'
 import useData from './store/useBoard'
+import Board from './assets/components/Board'
 
 interface HeaderProps {
-  isDarkMode: boolean
+  $isDarkMode: boolean
 }
 function App() {
 
@@ -17,26 +18,37 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <button onClick={modeSwitcher}>{isDarkMode ? 2 : 3}</button>
-      <Layout>
-        <StyledHeader isDarkMode={isDarkMode}><Header /></StyledHeader>
 
+      {/* {isDarkMode && <Overlay></Overlay>} */}
+      <StyledHeader $isDarkMode={isDarkMode}><Header /></StyledHeader>
+
+      <MainWrapper>
         <Aside />
-      </Layout>
+        <Board />
+      </MainWrapper>
+
+
 
     </ThemeProvider>
 
   )
 }
 
+
+
 const Layout = styled.div`
   width: 100%;
   height: 100vh;
 
 `
+const MainWrapper = styled.div`
+  display: flex;
+  width: 100%;
+`
 
 const StyledHeader = styled.div<HeaderProps>`
-  background-color: ${({ isDarkMode }) => isDarkMode ? theme.allColors.themeColor.darkMode.bgColor : theme.allColors.themeColor.lightMode.bgColor};
+/* background-color: #FFF; */
+  background-color: ${({ $isDarkMode }) => $isDarkMode ? theme.allColors.themeColor.darkMode.headerBg : theme.allColors.themeColor.lightMode.headerBg};
 `
 
 

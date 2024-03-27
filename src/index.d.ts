@@ -27,12 +27,18 @@ interface Colors {
   titleColor: string;
   modeChangerBg: string;
   borderColor: string;
+  asideBg: string;
+  headerBg: string;
+  boardBg: string;
+  switcherModeBg: string;
 }
 
 interface GeneralColor {
   addButtonBg: string;
   addButtonActiveBg: string;
   addButtonText: string;
+  activeBoardButtonBg: string;
+  toggleSwitcherBg: string;
 }
 
 interface AllColors {

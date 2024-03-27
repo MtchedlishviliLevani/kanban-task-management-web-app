@@ -8,10 +8,10 @@ function Container({ children }: { children: React.ReactNode }) {
 }
 
 const COntainer = styled.div`
-    max-width: calc(768px - 76px);
+    /* max-width: calc(768px - 76px); */
     width: 90%;
     margin: 0 auto;
-
+/* 
     ${breakPoints.md}{
         max-width: calc(920px - 92px);
 
@@ -24,7 +24,7 @@ const COntainer = styled.div`
     }
     ${breakPoints.xxl}{
         max-width: calc(1500px - 100px);
-    }
+    } */
 `
 
 export default Container

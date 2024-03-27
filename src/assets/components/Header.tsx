@@ -6,24 +6,32 @@ import EditIcon from "../images/icon-vertical-ellipsis.svg";
 import breakPoints from "../utility/BreakPoints";
 import DropDownIcon from "../images/icon-chevron-down.svg";
 import DarkLogo from "../images/logo-dark.svg";
+import LightLogo from "../images/logo-light.svg"
 import Container from "./Container";
-// import useData from "../../store/useBoard";
+import useData from "../../store/useBoard";
+import theme from "../../styles/Theme";
+
+interface StyledProps {
+    $isDarkMode: boolean
+}
 
 function Header() {
-    // const { isDarkMode, modeSwitcher } = useData();
+    const { isDarkMode } = useData();
     return (
         <>
             <Container >
                 <div>
-                    <HEader>
+                    <HEader $isDarkMode={isDarkMode}>
                         <div>
                             <picture>
-                                {/* აქ სტეტით განვსაზღვრავთ, რომელი ლოგოა საჭირო */}
-                                {/* <source srcSet={LigthLogo} media="(min-width:768px)" /> */}
-                                <source srcSet={DarkLogo} media="(min-width:768px)" />
+                                {isDarkMode ?
+                                    <source srcSet={LightLogo} media="(min-width:768px)" /> :
+                                    <source srcSet={DarkLogo} media="(min-width:768px)" />
+                                }
                                 <img src={MobileLogo} alt="" />
+
                             </picture></div>
-                        <MainPartWrapper>
+                        <MainPartWrapper $isDarkMode={isDarkMode}>
                             <div>
                                 <span>Platform Launch</span>
                                 <img src={DropDownIcon} alt="" />
@@ -38,23 +46,21 @@ function Header() {
                     </HEader>
                 </div >
             </Container>
-            <BorderLine></BorderLine>
+            <BorderLine $isDarkMode={isDarkMode}></BorderLine>
         </>
     );
 }
-const BorderLine = styled.div`
+const BorderLine = styled.div<StyledProps>`
     width: 100%;
     height: 1px;
-    background-color: ${({ theme }) => theme.allColors.themeColor.lightMode.borderColor};
+    background-color: ${({ $isDarkMode }) => $isDarkMode ? theme.allColors.themeColor.darkMode.borderColor : theme.allColors.themeColor.lightMode.borderColor};
 `
 
-const HEader = styled.header`
+const HEader = styled.header<StyledProps>`
     display: flex;
     gap: 2rem;
-    /* padding: 2rem 0; */
     align-items: center;
     height: 8rem;
-    /* width: 100%; */
     ${breakPoints.md}{
         gap: 5rem;
     }
@@ -65,8 +71,10 @@ const HEader = styled.header`
         align-items: center;
         height: 100%;
         padding-right: 6rem;
-        border-right: 1px solid ${({ theme }) => theme.allColors.themeColor.lightMode.borderColor}; 
+        border-right: 1px solid; 
+        border-right-color: ${({ $isDarkMode }) => $isDarkMode ? theme.allColors.themeColor.darkMode.borderColor : theme.allColors.themeColor.lightMode.borderColor};
         }
+
        
     }
 `
@@ -99,7 +107,7 @@ ${breakPoints.md}{
 
 `
 
-const MainPartWrapper = styled.div`
+const MainPartWrapper = styled.div<StyledProps>`
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -113,6 +121,10 @@ const MainPartWrapper = styled.div`
 
     &>div:nth-child(1){
         position: relative;
+    }
+    &>div:nth-child(1) span{
+    color: ${(props) => props.$isDarkMode ? "#FFF" : "#000"};
+
     }
 
 &>div:nth-child(1)>img{

@@ -2,11 +2,15 @@ import { DefaultTheme } from "styled-components/dist/types";
 import { Colors, GeneralColor } from "..";
 
 const darkModes: Colors = {
-  bgColor: "#20212C",
+  bgColor: "#2B2C37",
   mainColor: "#2B2C37",
   titleColor: "#FFF",
   modeChangerBg: "#20212C",
   borderColor: "#3E3F4E",
+  asideBg: "#2B2C37",
+  headerBg: "#2B2C37",
+  boardBg: "#20212C",
+  switcherModeBg: "#20212C",
 };
 
 const lightModes: Colors = {
@@ -15,12 +19,18 @@ const lightModes: Colors = {
   titleColor: "#000000",
   modeChangerBg: "#F4F7FD",
   borderColor: "#E4EBFA",
+  asideBg: "#FFF",
+  headerBg: "#FFF",
+  boardBg: "#F4F7FD",
+  switcherModeBg: "#F4F7FD",
 };
 
 const generalColors: GeneralColor = {
   addButtonBg: " rgba(99, 95, 199, 1)",
   addButtonActiveBg: "rgba(130, 143, 163, 1)",
   addButtonText: "rgba(256,256,256)",
+  activeBoardButtonBg: "rgba(99, 95, 199, 1)",
+  toggleSwitcherBg: "rgba(99, 95, 199, 1)",
 };
 
 const theme: DefaultTheme = {
