@@ -7,6 +7,12 @@ type Data = {
   addBoard: (newBoards: (typeof dataJson)["boards"]) => void;
   isDarkMode: boolean;
   modeSwitcher: () => void;
+  isOpenSide: boolean;
+  toggleIsOpenSide: () => void;
+  openSide: () => void;
+  hideSide: () => void;
+  isShownOverlay: boolean;
+  shownOverlay: () => void;
 };
 
 const useData = create<Data>()(
@@ -19,6 +25,13 @@ const useData = create<Data>()(
     },
     isDarkMode: false,
     modeSwitcher: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+    isOpenSide: true,
+    openSide: () => set(() => ({ isOpenSide: true })),
+    hideSide: () => set(() => ({ isOpenSide: false })),
+    toggleIsOpenSide: () => set((state) => ({ isOpenSide: !state.isOpenSide })),
+    isShownOverlay: false,
+    shownOverlay: () =>
+      set((state) => ({ isShownOverlay: !state.isShownOverlay })),
   }))
 );
 

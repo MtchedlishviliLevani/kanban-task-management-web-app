@@ -16,7 +16,14 @@ interface StyledProps {
 }
 
 function Header() {
+
+    const { toggleIsOpenSide, isOpenSide, shownOverlay } = useData();
+    function handle() {
+        toggleIsOpenSide(),
+            shownOverlay()
+    }
     const { isDarkMode } = useData();
+    console.log(isOpenSide, "00000")
     return (
         <>
             <Container >
@@ -34,7 +41,7 @@ function Header() {
                         <MainPartWrapper $isDarkMode={isDarkMode}>
                             <div>
                                 <span>Platform Launch</span>
-                                <img src={DropDownIcon} alt="" />
+                                <img onClick={() => handle()} src={DropDownIcon} alt="" />
                             </div>
                             <div>
                                 <AddBtnContainer>
@@ -76,6 +83,9 @@ const HEader = styled.header<StyledProps>`
         }
 
        
+    }
+     & img{
+        cursor: pointer;
     }
 `
 
@@ -126,6 +136,7 @@ const MainPartWrapper = styled.div<StyledProps>`
     color: ${(props) => props.$isDarkMode ? "#FFF" : "#000"};
 
     }
+   
 
 &>div:nth-child(1)>img{
     position: absolute;

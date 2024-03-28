@@ -13,13 +13,16 @@ interface HeaderProps {
 }
 function App() {
 
-  const { data, addBoard, isDarkMode, modeSwitcher } = useData();
-
+  const { data, addBoard, shownOverlay, isShownOverlay, isDarkMode, modeSwitcher, isOpenSide, openSide, hideSide, toggleIsOpenSide } = useData();
+  function handle() {
+    shownOverlay(),
+      openSide()
+  }
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
-      {/* {isDarkMode && <Overlay></Overlay>} */}
+      {isShownOverlay && <StyledOverlay onClick={handle}></StyledOverlay>}
       <StyledHeader $isDarkMode={isDarkMode}><Header /></StyledHeader>
 
       <MainWrapper>
@@ -35,7 +38,14 @@ function App() {
 }
 
 
-
+const StyledOverlay = styled.div`
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  background-color: #000;
+  opacity: 50%;
+  z-index: 9;
+`
 const Layout = styled.div`
   width: 100%;
   height: 100vh;

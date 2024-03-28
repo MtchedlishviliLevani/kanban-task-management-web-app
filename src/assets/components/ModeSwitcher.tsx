@@ -42,12 +42,11 @@ transition: left .7s;
     }
 `
 const SwitchModeContainer = styled.div<SwtichModeProps>`
-    width: 90%;
-    margin: 0 auto;
+    
     border-radius: 1.2rem;
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 2rem;
     padding: 1.5rem 0;
     background-color:${(props) => props.$isDarkMode ? props.theme.allColors.themeColor.darkMode.switcherModeBg : props.theme.allColors.themeColor.lightMode.switcherModeBg};
 `

@@ -5,9 +5,12 @@ import theme from "../../styles/Theme";
 import { useState } from "react";
 import ModeSwitcher from "./ModeSwitcher";
 import breakPoints from "../utility/BreakPoints";
+import hiddenIcon from "../images/icon-hide-sidebar.svg"
+// import showAsideIcon from "../images/icon-show-sidebar.svg"
 
 interface AsideProps {
     $IsDarkMode: boolean;
+    $isOpenSide: boolean;
 }
 interface ButtonProps {
     $activeButtonIndex: number;
@@ -16,42 +19,86 @@ interface ButtonProps {
 
 
 function Aside() {
+    // const [isOpenSide, setIsOpenSide] = useState(true);
     const [ActiveButtonIndex, setActiveButtonIndex] = useState(0);
-    const { data, isDarkMode } = useData();
-    console.log(isDarkMode + "bla")
-
+    const { data, isDarkMode, isOpenSide, toggleIsOpenSide } = useData();
+    console.log(isOpenSide)
     return (
-        <StyledAside $IsDarkMode={isDarkMode}>
-            <div>
-                <h2>ALL BOARDS ({data.boards.length})</h2>
-            </div>
+        <>
+            <StyledAside $IsDarkMode={isDarkMode} $isOpenSide={isOpenSide}>
+                <SideTopPart>
+                    <div>
+                        <h2>ALL BOARDS ({data.boards.length})</h2>
+                    </div>
 
-            <ButtonWrapper>
-                {data.boards.map((x, i: number) => (
-                    <ButtonContainer key={i}
-                        $index={i}
-                        $activeButtonIndex={ActiveButtonIndex}
-                        onClick={() => setActiveButtonIndex(i)}
-                    >
-                        <Button
+                    <ButtonWrapper>
+                        {data.boards.map((x, i: number) => (
+                            <ButtonContainer key={i}
+                                $index={i}
+                                $activeButtonIndex={ActiveButtonIndex}
+                                onClick={() => setActiveButtonIndex(i)}
+                            >
+                                <Button
 
 
-                        >
-                            <img src={boardIcon} alt="" />
-                            {x.name}
-                        </Button>
-                    </ButtonContainer>
-                ))}
-                <AddNewBoardBtn><img src={boardIcon} alt="" /><span>+ Create New Board</span> </AddNewBoardBtn>
-                <ModeSwitcher />
-            </ButtonWrapper>
-        </StyledAside>
+                                >
+                                    <img src={boardIcon} alt="" />
+                                    {x.name}
+                                </Button>
+                            </ButtonContainer>
+                        ))}
+                        <AddNewBoardBtn><img src={boardIcon} alt="" /><span>+ Create New Board</span> </AddNewBoardBtn>
+
+                    </ButtonWrapper></SideTopPart>
+                <SideBottomPart><ModeSwitcher />
+                    <div onClick={toggleIsOpenSide}>
+                        <img src={hiddenIcon} alt="" />
+                        <span>Hide Sidebar</span>
+                    </div>
+                </SideBottomPart>
+
+            </StyledAside>
+
+        </>
     );
 }
 
 
 
 export default Aside;
+
+
+
+const SideTopPart = styled.div`
+
+
+`
+
+const SideBottomPart = styled.div`
+display: flex;
+flex-direction: column;
+padding: 0 2rem;
+gap: 2rem;
+
+
+
+&>div:nth-child(2){
+    display:none;
+    cursor: pointer;
+    ${breakPoints.md}{
+       display: flex;
+    align-items: center;
+    gap: 2rem; 
+    }
+    
+   
+}
+&>div:nth-child(2)>span{
+    font-size: 1.5rem;
+    color: #828FA3;
+
+}
+`
 
 const AddNewBoardBtn = styled.button`
     all: unset;
@@ -73,17 +120,22 @@ const AddNewBoardBtn = styled.button`
     }
 `
 const StyledAside = styled.aside<AsideProps>`
-  width: 70%;
+  /* width: 70%; */
+  width: 37rem;
   /* height: calc(100% - 8vh); */
         background-color: ${(props) => props.$IsDarkMode ? theme.allColors.themeColor.darkMode.asideBg : theme.allColors.themeColor.lightMode.asideBg
     };
   position: absolute;
   transform: translate(-50%, -50%);
   left: 50%;
-  top: 60%;
+  top: 40%;
   padding: 1.5rem 0;
   border-radius: 1.2rem;
   font-weight: bold;
+  display:${({ $isOpenSide }) => $isOpenSide ? "none" : "flex"};
+  flex-direction: column;
+  gap: 3.5rem;
+  z-index: 10;
 
   ${breakPoints.md}{
     border-right:.1rem solid ${({ $IsDarkMode }) => $IsDarkMode ? theme.allColors.themeColor.darkMode.borderColor : theme.allColors.themeColor.lightMode.borderColor};
@@ -92,14 +144,20 @@ const StyledAside = styled.aside<AsideProps>`
     position: initial;
     transform: initial;
     height: calc(100vh - 8rem - .1rem);
+    /* display: flex; */
+    /* display:${({ $isOpenSide }) => $isOpenSide ? "flex" : "none"} ; */
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 3rem;
   }
 
   & > div:nth-child(1) {
-    padding-left: 20px;
+    /* padding-left: 20px; */
   }
   & h2 {
     font-size: 1.2rem;
     color: rgba(130, 143, 163, 1);
+    margin-left: 2rem;
   }
 `;
 
