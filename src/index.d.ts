@@ -31,6 +31,7 @@ interface Colors {
   headerBg: string;
   boardBg: string;
   switcherModeBg: string;
+  cardBg: string;
 }
 
 interface GeneralColor {

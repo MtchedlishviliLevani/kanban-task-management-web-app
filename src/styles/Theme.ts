@@ -11,6 +11,7 @@ const darkModes: Colors = {
   headerBg: "#2B2C37",
   boardBg: "#20212C",
   switcherModeBg: "#20212C",
+  cardBg: "#2B2C37",
 };
 
 const lightModes: Colors = {
@@ -23,6 +24,7 @@ const lightModes: Colors = {
   headerBg: "#FFF",
   boardBg: "#F4F7FD",
   switcherModeBg: "#F4F7FD",
+  cardBg: "#FFF",
 };
 
 const generalColors: GeneralColor = {

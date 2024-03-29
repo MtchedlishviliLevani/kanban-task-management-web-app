@@ -13,6 +13,8 @@ type Data = {
   hideSide: () => void;
   isShownOverlay: boolean;
   shownOverlay: () => void;
+  activeButton: string;
+  setActiveButton: (board: string) => void;
 };
 
 const useData = create<Data>()(
@@ -32,6 +34,9 @@ const useData = create<Data>()(
     isShownOverlay: false,
     shownOverlay: () =>
       set((state) => ({ isShownOverlay: !state.isShownOverlay })),
+    // active button for side component
+    activeButton: "Platform Launch",
+    setActiveButton: (board: string) => set({ activeButton: board }),
   }))
 );
 

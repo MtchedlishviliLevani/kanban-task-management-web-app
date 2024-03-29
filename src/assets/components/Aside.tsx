@@ -2,7 +2,7 @@ import styled from "styled-components";
 import useData from "../../store/useBoard";
 import boardIcon from "../images/icon-board.svg";
 import theme from "../../styles/Theme";
-import { useState } from "react";
+// import { useState } from "react";
 import ModeSwitcher from "./ModeSwitcher";
 import breakPoints from "../utility/BreakPoints";
 import hiddenIcon from "../images/icon-hide-sidebar.svg"
@@ -13,16 +13,20 @@ interface AsideProps {
     $isOpenSide: boolean;
 }
 interface ButtonProps {
-    $activeButtonIndex: number;
-    $index: number;
+    $activeButton: boolean;
+    $index?: number;
 }
 
 
+
 function Aside() {
-    // const [isOpenSide, setIsOpenSide] = useState(true);
-    const [ActiveButtonIndex, setActiveButtonIndex] = useState(0);
-    const { data, isDarkMode, isOpenSide, toggleIsOpenSide } = useData();
-    console.log(isOpenSide)
+
+    // const [ActiveButton, setActiveButton] = useState("Platform Launch");
+
+    const { data, isDarkMode, isOpenSide, toggleIsOpenSide, activeButton, setActiveButton } = useData();
+    console.log(activeButton)
+    const dataBoards = data.boards.map((board) => board.name);
+    console.log(dataBoards)
     return (
         <>
             <StyledAside $IsDarkMode={isDarkMode} $isOpenSide={isOpenSide}>
@@ -32,20 +36,21 @@ function Aside() {
                     </div>
 
                     <ButtonWrapper>
-                        {data.boards.map((x, i: number) => (
+                        {dataBoards.map((board, i: number) => (
                             <ButtonContainer key={i}
                                 $index={i}
-                                $activeButtonIndex={ActiveButtonIndex}
-                                onClick={() => setActiveButtonIndex(i)}
+                                $activeButton={activeButton === board}
+                                onClick={() => setActiveButton(board)}
                             >
                                 <Button
 
 
                                 >
                                     <img src={boardIcon} alt="" />
-                                    {x.name}
+                                    <span>{board}</span>
                                 </Button>
                             </ButtonContainer>
+
                         ))}
                         <AddNewBoardBtn><img src={boardIcon} alt="" /><span>+ Create New Board</span> </AddNewBoardBtn>
 
@@ -121,7 +126,7 @@ const AddNewBoardBtn = styled.button`
 `
 const StyledAside = styled.aside<AsideProps>`
   /* width: 70%; */
-  width: 37rem;
+  width: 30rem;
   /* height: calc(100% - 8vh); */
         background-color: ${(props) => props.$IsDarkMode ? theme.allColors.themeColor.darkMode.asideBg : theme.allColors.themeColor.lightMode.asideBg
     };
@@ -173,12 +178,12 @@ const ButtonContainer = styled.div<ButtonProps>`
     padding-left: 20px;
     display: flex;
     width: 90%;
-    border-radius: 0 12px 12px 0;
+    border-radius: 0 2.5rem 2.5rem 0;
     cursor: pointer;
-    background-color: ${(props) => props.$activeButtonIndex === props.$index ? theme.allColors.general.activeBoardButtonBg : ""};
+    background-color: ${(props) => props.$activeButton ? theme.allColors.general.activeBoardButtonBg : ""};
 
     & >button {
-        color: ${(props) => props.$activeButtonIndex === props.$index ? "#FFF" : "#828FA3"};
+        color: ${(props) => props.$activeButton ? "#FFF" : "#828FA3"};
 
     }
 `

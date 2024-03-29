@@ -7,6 +7,7 @@ import styled from 'styled-components'// import { MediaQueryBreakPoints } from '
 import Aside from './assets/components/Aside'
 import useData from './store/useBoard'
 import Board from './assets/components/Board'
+import breakPoints from './assets/utility/BreakPoints'
 
 interface HeaderProps {
   $isDarkMode: boolean
@@ -14,15 +15,15 @@ interface HeaderProps {
 function App() {
 
   const { data, addBoard, shownOverlay, isShownOverlay, isDarkMode, modeSwitcher, isOpenSide, openSide, hideSide, toggleIsOpenSide } = useData();
-  function handle() {
-    shownOverlay(),
-      openSide()
+  function handleAsideShowing() {
+    // shownOverlay(),
+    openSide()
   }
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
-      {isShownOverlay && <StyledOverlay onClick={handle}></StyledOverlay>}
+      {isOpenSide && <StyledOverlay onClick={handleAsideShowing}></StyledOverlay>}
       <StyledHeader $isDarkMode={isDarkMode}><Header /></StyledHeader>
 
       <MainWrapper>
@@ -45,6 +46,8 @@ const StyledOverlay = styled.div`
   background-color: #000;
   opacity: 50%;
   z-index: 9;
+  ${breakPoints.md}{display:none}
+ 
 `
 const Layout = styled.div`
   width: 100%;

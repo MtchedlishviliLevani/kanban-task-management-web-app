@@ -12,23 +12,23 @@ import useData from "../../store/useBoard";
 import theme from "../../styles/Theme";
 
 interface StyledProps {
-    $isDarkMode: boolean
+    $isDarkMode?: boolean;
+
 }
 
 function Header() {
 
-    const { toggleIsOpenSide, isOpenSide, shownOverlay } = useData();
+    const { toggleIsOpenSide, shownOverlay, isShownOverlay } = useData();
     function handle() {
-        toggleIsOpenSide(),
-            shownOverlay()
+        toggleIsOpenSide()
+
     }
     const { isDarkMode } = useData();
-    console.log(isOpenSide, "00000")
     return (
         <>
             <Container >
                 <div>
-                    <HEader $isDarkMode={isDarkMode}>
+                    <HEader $isDarkMode={isDarkMode} >
                         <div>
                             <picture>
                                 {isDarkMode ?
@@ -41,7 +41,9 @@ function Header() {
                         <MainPartWrapper $isDarkMode={isDarkMode}>
                             <div>
                                 <span>Platform Launch</span>
-                                <img onClick={() => handle()} src={DropDownIcon} alt="" />
+                                <img onClick={() => handle()} src={DropDownIcon} style={{ transform: isShownOverlay ? "rotate(180deg)" : undefined }}
+
+                                    alt="" />
                             </div>
                             <div>
                                 <AddBtnContainer>
@@ -143,7 +145,6 @@ const MainPartWrapper = styled.div<StyledProps>`
     transform: translateY(-50%);
     top: 60%;
     margin-left: 1rem;
-
     ${breakPoints.md}{
         display: none;
     }
