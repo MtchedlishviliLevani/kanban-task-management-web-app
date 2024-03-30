@@ -20,9 +20,10 @@ function Header() {
 
     const { toggleIsOpenSide, shownOverlay, isShownOverlay } = useData();
     function handle() {
-        toggleIsOpenSide()
-
+        toggleIsOpenSide(),
+            shownOverlay()
     }
+    console.log(isShownOverlay)
     const { isDarkMode } = useData();
     return (
         <>

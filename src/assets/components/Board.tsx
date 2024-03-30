@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import useData from '../../store/useBoard'
 import breakPoints from '../utility/BreakPoints'
 import showAside from "../images/icon-show-sidebar.svg"
+import NewColumn from './NewColumn'
 // import data from "../../data.json"
 
 interface States {
@@ -19,7 +20,7 @@ function Board() {
     }
     const { isDarkMode, isOpenSide, toggleIsOpenSide, shownOverlay, data, activeButton } = useData()
     const foundBoard = data.boards.find(board => board.name === activeButton);
-    console.log(foundBoard);
+    // console.log(foundBoard);
     const colors = [" #49C4E5", "#8471F2", "#67E2AE"];
 
     return (
@@ -32,11 +33,14 @@ function Board() {
                     <CardWrapper>{columnsName.tasks.map((task, i) => <CardStyled key={i} $isDarkMode={isDarkMode}><h2>{task.title}</h2><span>0 of {task.subtasks.length} subtaks</span></CardStyled>)}</CardWrapper>
 
                 </BoardWrapper>)
-                }</BoardContainer>
+                }
+                <NewColumn />
+            </BoardContainer>
 
         </BoardStyled >
     )
 }
+
 const CardWrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -79,6 +83,13 @@ width: 30rem;
 display: flex;
 flex-direction: column;
 gap: 1rem;
+cursor: pointer;
+transition: opacity .5s;
+${breakPoints.md}{
+    &:hover{
+        opacity: 50%;
+    }
+}
   &>h2{
     font-size: 1.5rem;
     font-weight: bold;

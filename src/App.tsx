@@ -16,14 +16,15 @@ function App() {
 
   const { data, addBoard, shownOverlay, isShownOverlay, isDarkMode, modeSwitcher, isOpenSide, openSide, hideSide, toggleIsOpenSide } = useData();
   function handleAsideShowing() {
-    // shownOverlay(),
-    openSide()
+    shownOverlay(),
+      openSide()
   }
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
-      {isOpenSide && <StyledOverlay onClick={handleAsideShowing}></StyledOverlay>}
+
+      {isShownOverlay && <StyledOverlay onClick={handleAsideShowing}></StyledOverlay>}
       <StyledHeader $isDarkMode={isDarkMode}><Header /></StyledHeader>
 
       <MainWrapper>

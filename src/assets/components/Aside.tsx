@@ -21,12 +21,17 @@ interface ButtonProps {
 
 function Aside() {
 
+
     // const [ActiveButton, setActiveButton] = useState("Platform Launch");
 
-    const { data, isDarkMode, isOpenSide, toggleIsOpenSide, activeButton, setActiveButton } = useData();
+    const { data, isDarkMode, isOpenSide, toggleIsOpenSide, activeButton, setActiveButton, shownOverlay } = useData();
     console.log(activeButton)
     const dataBoards = data.boards.map((board) => board.name);
     console.log(dataBoards)
+    function handle() {
+        toggleIsOpenSide(),
+            shownOverlay()
+    }
     return (
         <>
             <StyledAside $IsDarkMode={isDarkMode} $isOpenSide={isOpenSide}>
@@ -56,7 +61,7 @@ function Aside() {
 
                     </ButtonWrapper></SideTopPart>
                 <SideBottomPart><ModeSwitcher />
-                    <div onClick={toggleIsOpenSide}>
+                    <div onClick={handle}>
                         <img src={hiddenIcon} alt="" />
                         <span>Hide Sidebar</span>
                     </div>
