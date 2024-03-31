@@ -15,6 +15,8 @@ type Data = {
   shownOverlay: () => void;
   activeButton: string;
   setActiveButton: (board: string) => void;
+  editBoardName?: string;
+  //   boardInputValue: string;
 };
 
 const useData = create<Data>()(
@@ -37,6 +39,7 @@ const useData = create<Data>()(
     // active button for side component
     activeButton: "Platform Launch",
     setActiveButton: (board: string) => set({ activeButton: board }),
+    // editBoardName:()
   }))
 );
 

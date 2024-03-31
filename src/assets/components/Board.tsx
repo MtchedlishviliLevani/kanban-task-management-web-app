@@ -20,7 +20,6 @@ function Board() {
     }
     const { isDarkMode, isOpenSide, toggleIsOpenSide, shownOverlay, data, activeButton } = useData()
     const foundBoard = data.boards.find(board => board.name === activeButton);
-    // console.log(foundBoard);
     const colors = [" #49C4E5", "#8471F2", "#67E2AE"];
 
     return (

@@ -18,13 +18,14 @@ function App() {
   function handleAsideShowing() {
     shownOverlay(),
       openSide()
-  }
+  } console.log(isOpenSide)
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
 
       {isShownOverlay && <StyledOverlay onClick={handleAsideShowing}></StyledOverlay>}
+      <StyledOverlay onClick={handleAsideShowing}></StyledOverlay>
       <StyledHeader $isDarkMode={isDarkMode}><Header /></StyledHeader>
 
       <MainWrapper>
@@ -48,7 +49,6 @@ const StyledOverlay = styled.div`
   opacity: 50%;
   z-index: 9;
   ${breakPoints.md}{display:none}
- 
 `
 const Layout = styled.div`
   width: 100%;
