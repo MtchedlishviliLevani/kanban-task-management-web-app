@@ -7,9 +7,12 @@ import breakPoints from "../utility/BreakPoints";
 import DropDownIcon from "../images/icon-chevron-down.svg";
 import DarkLogo from "../images/logo-dark.svg";
 import LightLogo from "../images/logo-light.svg"
+import { useAppDispatch, useAppSelector } from "../../app/hook";
 import Container from "./Container";
-import useData from "../../store/useBoard";
+// import useData from "../../store/useBoard";
 import theme from "../../styles/Theme";
+import { hideAside } from "../../features/asideSlice";
+import { toggleOverlay } from "../../features/boardSlice";
 
 interface StyledProps {
     $isDarkMode?: boolean;
@@ -18,13 +21,23 @@ interface StyledProps {
 
 function Header() {
 
-    const { toggleIsOpenSide, shownOverlay, isShownOverlay } = useData();
+    // const { toggleIsOpenSide, shownOverlay, isShownOverlay } = useData();
+    // function handle() {
+    //     toggleIsOpenSide(),
+    //         shownOverlay()
+    // }
+    const dispatch = useAppDispatch()
+
     function handle() {
-        toggleIsOpenSide(),
-            shownOverlay()
+        dispatch(hideAside()),
+            dispatch(toggleOverlay())
     }
-    console.log(isShownOverlay)
-    const { isDarkMode } = useData();
+    const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode);
+    const isShownOverlay = useAppSelector(state => state.boardReducer.isOverlayed);
+    // active dataJSon index
+    const activeIndex = useAppSelector(state => state.boardReducer.activeIndex)
+    const data = useAppSelector(state => state.boardReducer.data)
+    const activeColumnName = data.boards[activeIndex].name
     return (
         <>
             <Container >
@@ -41,8 +54,9 @@ function Header() {
                             </picture></div>
                         <MainPartWrapper $isDarkMode={isDarkMode}>
                             <div>
-                                <span>Platform Launch</span>
-                                <img onClick={() => handle()} src={DropDownIcon} style={{ transform: isShownOverlay ? "rotate(180deg)" : undefined }}
+                                <span>{activeColumnName}</span>
+                                <img
+                                    onClick={() => handle()} src={DropDownIcon} style={{ transform: isShownOverlay ? "rotate(180deg)" : undefined }}
 
                                     alt="" />
                             </div>
@@ -85,7 +99,7 @@ const HEader = styled.header<StyledProps>`
         border-right-color: ${({ $isDarkMode }) => $isDarkMode ? theme.allColors.themeColor.darkMode.borderColor : theme.allColors.themeColor.lightMode.borderColor};
         }
 
-       
+
     }
      & img{
         cursor: pointer;
@@ -105,7 +119,7 @@ ${breakPoints.md}{
     justify-content: space-between;
     align-items: center;
     gap:1rem;
-    
+
 }
 
 &>span{
@@ -139,7 +153,7 @@ const MainPartWrapper = styled.div<StyledProps>`
     color: ${(props) => props.$isDarkMode ? "#FFF" : "#000"};
 
     }
-   
+
 
 &>div:nth-child(1)>img{
     position: absolute;
@@ -157,3 +171,6 @@ const MainPartWrapper = styled.div<StyledProps>`
 `
 
 export default Header;
+
+
+

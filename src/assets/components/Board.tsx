@@ -1,43 +1,89 @@
 import styled from 'styled-components'
-import useData from '../../store/useBoard'
+// import useData from '../../store/useBoard'
 import breakPoints from '../utility/BreakPoints'
 import showAside from "../images/icon-show-sidebar.svg"
 import NewColumn from './NewColumn'
-// import data from "../../data.json"
+// import data1 from "../../data.json"
+
+import { useAppDispatch, useAppSelector } from "../../app/hook"
+import { toggleOverlay } from '../../features/boardSlice'
+import { hideAside } from '../../features/asideSlice'
+import NewTaskForm from './NewTaskForm'
+import AddNewBoard from './AddNewBoard'
+import DeleteBoard from './DeleteBoard'
+import TaskDetailInformation from './TaskDetailInformation'
+import { useState } from 'react'
 
 interface States {
-    $isDarkMode: boolean
+  $isDarkMode: boolean
 }
 
 interface Card {
-    $isDarkMode: boolean
+  $isDarkMode: boolean
 
 }
 function Board() {
-    function handle() {
-        toggleIsOpenSide(),
-            shownOverlay()
-    }
-    const { isDarkMode, isOpenSide, toggleIsOpenSide, shownOverlay, data, activeButton } = useData()
-    const foundBoard = data.boards.find(board => board.name === activeButton);
-    const colors = [" #49C4E5", "#8471F2", "#67E2AE"];
 
-    return (
-        <BoardStyled $isDarkMode={isDarkMode}>
-            {isOpenSide && <ShowAside onClick={handle}>
-                <img src={showAside} alt="" /></ShowAside>}
-            <BoardContainer>
-                {foundBoard?.columns.map((columnsName, i) => <BoardWrapper key={i} $isDarkMode={isDarkMode}>
-                    <div><span style={{ background: colors[i % colors.length] }}></span> <h3>{columnsName.name}</h3></div>
-                    <CardWrapper>{columnsName.tasks.map((task, i) => <CardStyled key={i} $isDarkMode={isDarkMode}><h2>{task.title}</h2><span>0 of {task.subtasks.length} subtaks</span></CardStyled>)}</CardWrapper>
+  // function handle() {
+  //     toggleIsOpenSide(),
+  //         shownOverlay()
+  // }
+  // const { isDarkMode, isOpenSide, toggleIsOpenSide, shownOverlay, data, activeButtonIndex } = useData()
+  // const foundBoard = data.boards[activeButtonIndex];
 
-                </BoardWrapper>)
-                }
-                <NewColumn />
-            </BoardContainer>
+  // const colors = [" #49C4E5", "#8471F2", "#67E2AE"];
 
-        </BoardStyled >
-    )
+  const colors = [" #49C4E5", "#8471F2", "#67E2AE"];
+
+  const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode);
+  const data = useAppSelector(state => state.boardReducer.data)
+  const activeIndex = useAppSelector(state => state.boardReducer.activeIndex)
+  const foundBoard = data.boards[activeIndex];
+  const isOpenSide = useAppSelector(state => state.asideReducer.isOpenSide);
+  // const isOpenNewColumn = useAppSelector(state => state.boardReducer.isOpenNewColumn);
+
+  const dispatch = useAppDispatch()
+  function handle() {
+    dispatch(hideAside()),
+      dispatch(toggleOverlay())
+  }
+  // new code
+  const [activeIndex1, setActiveIndex] = useState(-1);
+  const [activeColumn, setActiveColumn] = useState('')
+  // const filtered = foundBoard.columns.filter((value) => value.name == activeColumn)
+  // console.log(filtered, 99)
+  console.log(activeIndex1)
+  console.log(activeColumn, 777)
+  return (
+    <>
+      <BoardStyled $isDarkMode={isDarkMode}>
+        {isOpenSide == false && <ShowAside
+          onClick={handle}
+        >
+          <img src={showAside} alt="" /></ShowAside>}
+        <BoardContainer>
+          {foundBoard?.columns.map((columnsName, i: number) => <BoardWrapper key={i} $isDarkMode={isDarkMode}>
+            <div><span style={{ background: colors[i % colors.length] }}></span> <h3>{columnsName.name}</h3></div>
+            <CardWrapper>{columnsName.tasks.length > 0 && columnsName.tasks.map((task, i) => <CardStyled key={i} $isDarkMode={isDarkMode} onClick={() => {
+              setActiveIndex(i),
+                setActiveColumn(columnsName.name)
+            }}><h2>{task.title}</h2><span>0 of {task.subtasks?.length} subtaks</span></CardStyled>)}</CardWrapper>
+
+          </BoardWrapper>)
+          }
+          {/* edited */}
+          {/* <AddNewBoard /> */}
+          <NewColumn />
+          {/*edited newTaskForm */}
+          {/* <NewTaskForm /> */}
+          <TaskDetailInformation activeIndex1={activeIndex1} activeColumnName={activeColumn} />
+
+          <DeleteBoard />
+        </BoardContainer>
+
+      </BoardStyled >
+    </>
+  )
 }
 
 const CardWrapper = styled.div`
@@ -48,6 +94,7 @@ const CardWrapper = styled.div`
 `
 
 const BoardContainer = styled.div`
+height: 85vh;
 display: flex;
 gap: 3.5rem;
 padding:2rem 3rem ;
@@ -104,7 +151,7 @@ ${breakPoints.md}{
 const ShowAside = styled.div`
   display: none;
   cursor: pointer;
-  
+
   ${breakPoints.md} {
     width: 5.6rem;
     height: 4.8rem;

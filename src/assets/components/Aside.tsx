@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import useData from "../../store/useBoard";
+// import useData from "../../store/useBoard";
 import boardIcon from "../images/icon-board.svg";
 import theme from "../../styles/Theme";
 // import { useState } from "react";
@@ -7,6 +7,11 @@ import ModeSwitcher from "./ModeSwitcher";
 import breakPoints from "../utility/BreakPoints";
 import hiddenIcon from "../images/icon-hide-sidebar.svg"
 // import showAsideIcon from "../images/icon-show-sidebar.svg"
+import { useAppDispatch, useAppSelector } from "../../app/hook";
+import { setActiveBoardName, setActiveColumnName, setActiveIndex } from "../../features/boardSlice";
+import { hideAside } from "../../features/asideSlice";
+
+
 
 interface AsideProps {
     $IsDarkMode: boolean;
@@ -21,38 +26,54 @@ interface ButtonProps {
 
 function Aside() {
 
+    // const { data, activeButtonIndex, setActiveButtonIndex, isDarkMode, isOpenSide, toggleIsOpenSide, shownOverlay } = useData();
+    // const dataBoards = data.boards.map((board) => board.name);
+    // function handle() {
+    //     toggleIsOpenSide(),
+    //         shownOverlay()
+    // }
+    // function activeBoard(index: number) {
+    //     setActiveButtonIndex(index)
+    // }
 
-    // const [ActiveButton, setActiveButton] = useState("Platform Launch");
-
-    const { data, isDarkMode, isOpenSide, toggleIsOpenSide, activeButton, setActiveButton, shownOverlay } = useData();
-    console.log(activeButton)
-    const dataBoards = data.boards.map((board) => board.name);
-    console.log(dataBoards)
+    const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode);
+    const data = useAppSelector(state => state.boardReducer.data);
+    const dispatch = useAppDispatch();
+    const activeIndex = useAppSelector(state => state.boardReducer.activeIndex)
+    const isOpenSide = useAppSelector(state => state.asideReducer.isOpenSide)
+    console.log(isOpenSide,)
     function handle() {
-        toggleIsOpenSide(),
-            shownOverlay()
+        dispatch(hideAside())
     }
+    console.log(data, 999)
+
+
     return (
         <>
-            <StyledAside $IsDarkMode={isDarkMode} $isOpenSide={isOpenSide}>
+            <StyledAside $IsDarkMode={isDarkMode}
+                $isOpenSide={isOpenSide}
+            >
                 <SideTopPart>
                     <div>
                         <h2>ALL BOARDS ({data.boards.length})</h2>
                     </div>
 
                     <ButtonWrapper>
-                        {dataBoards.map((board, i: number) => (
+                        {data.boards.map((board, i: number) => (
                             <ButtonContainer key={i}
                                 $index={i}
-                                $activeButton={activeButton === board}
-                                onClick={() => setActiveButton(board)}
+                                $activeButton={activeIndex === i}
+                                onClick={() => {
+                                    dispatch(setActiveIndex(i)),
+                                        // edited
+                                        dispatch(setActiveColumnName())
+                                    dispatch(setActiveBoardName())
+                                }}
                             >
                                 <Button
-
-
                                 >
                                     <img src={boardIcon} alt="" />
-                                    <span>{board}</span>
+                                    <span>{board.name}</span>
                                 </Button>
                             </ButtonContainer>
 
@@ -61,13 +82,15 @@ function Aside() {
 
                     </ButtonWrapper></SideTopPart>
                 <SideBottomPart><ModeSwitcher />
-                    <div onClick={handle}>
+                    <div
+                        onClick={handle}
+                    >
                         <img src={hiddenIcon} alt="" />
                         <span>Hide Sidebar</span>
                     </div>
                 </SideBottomPart>
 
-            </StyledAside>
+            </StyledAside >
 
         </>
     );
@@ -142,7 +165,7 @@ const StyledAside = styled.aside<AsideProps>`
   padding: 1.5rem 0;
   border-radius: 1.2rem;
   font-weight: bold;
-  display:${({ $isOpenSide }) => $isOpenSide ? "none" : "flex"};
+  display:${({ $isOpenSide }) => $isOpenSide ? "flex" : "none"};
   flex-direction: column;
   gap: 3.5rem;
   z-index: 10;
