@@ -1,8 +1,13 @@
+import { ReactNode } from 'react';
 import styled from 'styled-components'
 
-export default function Button(prop) {
+interface ButtonProps {
+    children: ReactNode;
+    submitFn: () => void;
+}
+export default function Button({ children, submitFn }: ButtonProps) {
     return (
-        <ButtonStyled onClick={prop.submitFn}>{prop.children}</ButtonStyled>
+        <ButtonStyled onClick={submitFn}>{children}</ButtonStyled>
     )
 }
 

@@ -1,15 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "../features/counterSlice";
 import boardReducer from "../features/boardSlice";
 import switchModeReducer from "../features/switchModeSlice";
 import asideReducer from "../features/asideSlice";
+import modalReducer from "../features/modalSlice";
 
 const store = configureStore({
   reducer: {
-    counterReducer,
     boardReducer,
     switchModeReducer,
     asideReducer,
+    modalReducer,
   },
 });
 

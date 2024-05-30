@@ -1,74 +1,67 @@
 import styled from "styled-components";
-// import useData from "../../store/useBoard";
 import boardIcon from "../images/icon-board.svg";
 import theme from "../../styles/Theme";
-// import { useState } from "react";
 import ModeSwitcher from "./ModeSwitcher";
 import breakPoints from "../utility/BreakPoints";
 import hiddenIcon from "../images/icon-hide-sidebar.svg"
-// import showAsideIcon from "../images/icon-show-sidebar.svg"
 import { useAppDispatch, useAppSelector } from "../../app/hook";
-import { setActiveBoardName, setActiveColumnName, setActiveIndex } from "../../features/boardSlice";
-import { hideAside } from "../../features/asideSlice";
-
-
+import { setActiveIndex } from "../../features/boardSlice";
+import { toggleAside } from "../../features/asideSlice";
+import { toggleAddNewBoard, toggleOverlay } from "../../features/modalSlice";
 
 interface AsideProps {
     $IsDarkMode: boolean;
     $isOpenSide: boolean;
 }
-interface ButtonProps {
+interface StyledButtonProps {
     $activeButton: boolean;
     $index?: number;
 }
 
 
-
-function Aside() {
-
-    // const { data, activeButtonIndex, setActiveButtonIndex, isDarkMode, isOpenSide, toggleIsOpenSide, shownOverlay } = useData();
-    // const dataBoards = data.boards.map((board) => board.name);
-    // function handle() {
-    //     toggleIsOpenSide(),
-    //         shownOverlay()
-    // }
-    // function activeBoard(index: number) {
-    //     setActiveButtonIndex(index)
-    // }
-
+function Aside({ width }: { width: number }) {
     const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode);
     const data = useAppSelector(state => state.boardReducer.data);
     const dispatch = useAppDispatch();
     const activeIndex = useAppSelector(state => state.boardReducer.activeIndex)
     const isOpenSide = useAppSelector(state => state.asideReducer.isOpenSide)
-    console.log(isOpenSide,)
-    function handle() {
-        dispatch(hideAside())
-    }
-    console.log(data, 999)
 
+    function handleAside() {
+        dispatch(toggleAside())
+    }
+
+    function openNewBoard() {
+        dispatch(toggleAddNewBoard())
+        if (width > 768) {
+            dispatch(toggleOverlay())
+        } else {
+            dispatch(toggleAside())
+        }
+    }
+
+    function handleSelectFunction(i: number) {
+        dispatch(setActiveIndex(i))
+        if (width < 768) {
+            dispatch(toggleAside())
+            dispatch(toggleOverlay())
+        }
+    }
 
     return (
         <>
             <StyledAside $IsDarkMode={isDarkMode}
                 $isOpenSide={isOpenSide}
             >
-                <SideTopPart>
+                <div>
                     <div>
                         <h2>ALL BOARDS ({data.boards.length})</h2>
                     </div>
-
                     <ButtonWrapper>
                         {data.boards.map((board, i: number) => (
                             <ButtonContainer key={i}
                                 $index={i}
                                 $activeButton={activeIndex === i}
-                                onClick={() => {
-                                    dispatch(setActiveIndex(i)),
-                                        // edited
-                                        dispatch(setActiveColumnName())
-                                    dispatch(setActiveBoardName())
-                                }}
+                                onClick={() => handleSelectFunction(i)}
                             >
                                 <Button
                                 >
@@ -78,42 +71,27 @@ function Aside() {
                             </ButtonContainer>
 
                         ))}
-                        <AddNewBoardBtn><img src={boardIcon} alt="" /><span>+ Create New Board</span> </AddNewBoardBtn>
+                        <AddNewBoardBtn onClick={openNewBoard}><img src={boardIcon} alt="" /><span>+ Create New Board</span> </AddNewBoardBtn>
 
-                    </ButtonWrapper></SideTopPart>
+                    </ButtonWrapper></div>
                 <SideBottomPart><ModeSwitcher />
                     <div
-                        onClick={handle}
+                        onClick={handleAside}
                     >
                         <img src={hiddenIcon} alt="" />
                         <span>Hide Sidebar</span>
                     </div>
                 </SideBottomPart>
-
             </StyledAside >
-
         </>
     );
 }
-
-
-
-export default Aside;
-
-
-
-const SideTopPart = styled.div`
-
-
-`
 
 const SideBottomPart = styled.div`
 display: flex;
 flex-direction: column;
 padding: 0 2rem;
 gap: 2rem;
-
-
 
 &>div:nth-child(2){
     display:none;
@@ -122,17 +100,13 @@ gap: 2rem;
        display: flex;
     align-items: center;
     gap: 2rem; 
-    }
-    
-   
+    }  
 }
 &>div:nth-child(2)>span{
     font-size: 1.5rem;
     color: #828FA3;
-
 }
 `
-
 const AddNewBoardBtn = styled.button`
     all: unset;
     display: flex;
@@ -153,9 +127,7 @@ const AddNewBoardBtn = styled.button`
     }
 `
 const StyledAside = styled.aside<AsideProps>`
-  /* width: 70%; */
   width: 30rem;
-  /* height: calc(100% - 8vh); */
         background-color: ${(props) => props.$IsDarkMode ? theme.allColors.themeColor.darkMode.asideBg : theme.allColors.themeColor.lightMode.asideBg
     };
   position: absolute;
@@ -168,24 +140,24 @@ const StyledAside = styled.aside<AsideProps>`
   display:${({ $isOpenSide }) => $isOpenSide ? "flex" : "none"};
   flex-direction: column;
   gap: 3.5rem;
-  z-index: 10;
+  z-index: 12;
 
   ${breakPoints.md}{
     border-right:.1rem solid ${({ $IsDarkMode }) => $IsDarkMode ? theme.allColors.themeColor.darkMode.borderColor : theme.allColors.themeColor.lightMode.borderColor};
     border-radius: initial;
-    width: calc(5% + 21.373rem);
-    position: initial;
+    width: calc(2rem + 21.373rem);
+    position: fixed;
+    top:calc(8rem + .1rem);
+    left: 0;
     transform: initial;
     height: calc(100vh - 8rem - .1rem);
-    /* display: flex; */
-    /* display:${({ $isOpenSide }) => $isOpenSide ? "flex" : "none"} ; */
     flex-direction: column;
     justify-content: space-between;
     padding-bottom: 3rem;
+    z-index: 10;
   }
 
   & > div:nth-child(1) {
-    /* padding-left: 20px; */
   }
   & h2 {
     font-size: 1.2rem;
@@ -201,7 +173,7 @@ const ButtonWrapper = styled.div`
   margin-top: 2rem;
 `;
 
-const ButtonContainer = styled.div<ButtonProps>`
+const ButtonContainer = styled.div<StyledButtonProps>`
      padding: 1rem 0;
     padding-left: 20px;
     display: flex;
@@ -209,10 +181,8 @@ const ButtonContainer = styled.div<ButtonProps>`
     border-radius: 0 2.5rem 2.5rem 0;
     cursor: pointer;
     background-color: ${(props) => props.$activeButton ? theme.allColors.general.activeBoardButtonBg : ""};
-
     & >button {
         color: ${(props) => props.$activeButton ? "#FFF" : "#828FA3"};
-
     }
 `
 const Button = styled.button`
@@ -223,4 +193,10 @@ padding: 1rem;
   font-size: 1.5rem;
   color: #fff;
   cursor: pointer;
+
+  & img {
+width: 16px;
+height: 16px;
+  }
 `;
+export default Aside;

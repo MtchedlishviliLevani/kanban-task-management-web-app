@@ -1,46 +1,40 @@
-import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "../../app/hook";
-import { addTaskValues }
-    from "../../features/boardSlice";
-import {
-    toggleNewTaskForm,
-    toggleOverlay
-} from "../../features/modalSlice"
-import { useState } from "react";
-import DropDownImg from "../images/icon-chevron-down.svg";
-import RemoveIcon from "../images/icon-cross.svg";
-import ModalWindow from "./ModalWindow";
-import Button from "./Button";
-import Button2 from "./Button2";
-import { useForm } from "react-hook-form";
+import styled from "styled-components"
+import ModalWindow from "./ModalWindow"
+import { useAppSelector } from "../../app/hook"
+import { useState } from "react"
+import RemoveIcon from "../images/icon-cross.svg"
+import Button2 from "./Button2"
+import DropDownImg from "../images/icon-chevron-down.svg"
+import Button from "./Button"
+import { editTaskValues, moveTask, } from "../../features/boardSlice"
+import { toggleEditTask, toggleOverlay } from "../../features/modalSlice"
+import { useDispatch } from "react-redux"
+import { useForm } from "react-hook-form"
 
-interface Props {
-    $isDarkMode: boolean;
+
+interface StyledProps {
+    $isDarkMode: boolean
 }
+
 interface InputForm {
-    tasksTitle: string;
+    taskTitle: string;
     subTasks: { title: string }[]
+
 }
-function NewTaskForm() {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<InputForm>();
-    const activeIndex = useAppSelector((state) => state.boardReducer.activeIndex);
-    const data = useAppSelector(
-        (state) => state.boardReducer.data.boards[activeIndex].columns
-    );
-    const isDarkMode = useAppSelector(
-        (state) => state.switchModeReducer.isDarkMode
-    );
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [todo, setTodo] = useState(data[0].name);
-    const [subTasks, setSubTasks] = useState([
-        { title: "", isCompleted: false },
-        { title: "", isCompleted: false },
-    ]);
+function EditTask({ activeTaskIndex, activeColumnName }: { activeTaskIndex: number, activeColumnName: string }) {
+    const { register, handleSubmit, formState: { errors } } = useForm<InputForm>()
+    const dispatch = useDispatch()
+    const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode)
+
+
+    const activeIndex = useAppSelector((state) => state.boardReducer.activeIndex)
+    const data = useAppSelector((state) => state.boardReducer.data.boards[activeIndex].columns)
+
+    const foundColumn = data.filter((value) => value.name == activeColumnName)[0]?.tasks[activeTaskIndex]
+    function removeSubtaskInput(i: number) {
+        const filteredSubtask = subTasks.filter((_, index) => index !== i)
+        setSubTasks(filteredSubtask)
+    }
     const addSubTask = () => {
         const clone = [...subTasks];
         setSubTasks([
@@ -48,50 +42,50 @@ function NewTaskForm() {
             {
                 title: "",
                 isCompleted: false,
+
             },
         ]);
     };
-    function submitFn() {
-        dispatch(addTaskValues({ title, description, status: todo, subTasks }));
-        setTitle("");
-        setDescription("");
-        setSubTasks([
-            {
-                title: "",
-                isCompleted: false,
-            },
-            {
-                title: "",
-                isCompleted: false,
-            },
-        ]);
-        dispatch(toggleNewTaskForm());
-        dispatch(toggleOverlay());
-    }
-    function removeSubtaskInput(i: number) {
-        const filteredSubtask = subTasks.filter((_, index) => index !== i);
-        setSubTasks(filteredSubtask);
-    }
+    const sourceIndex = data.findIndex((value) => value?.tasks[activeTaskIndex]?.title == foundColumn?.title)
 
-    const dispatch = useAppDispatch();
+    const [title, setTitle] = useState(foundColumn?.title)
+    const [description, setDescription] = useState(foundColumn?.description);
+    const [todo, setTodo] = useState(data[0].name);
+
+    const [subTasks, setSubTasks] = useState(foundColumn?.subtasks.map((item) => ({
+        title: item.title,
+        isCompleted: item.isCompleted
+    })));
+    function submitFn() {
+        dispatch(editTaskValues({ title, description, status: "Doing", subTasks, activeColumnName, activeTaskIndex }))
+        dispatch(moveTask({
+            sourceIndex,
+            activeTaskIndex,
+            status: todo,
+            activeColumnName
+        }))
+        dispatch(toggleOverlay())
+        dispatch(toggleEditTask())
+    }
     return (
         <ModalWindow>
-            <StyledNewTaskForm $isDarkMode={isDarkMode}>
-                <h2>Add New Task</h2>
+            <StyledEditTaskForm $isDarkMode={isDarkMode}>
+                <h2>Edit Task</h2>
                 <div>
                     <label htmlFor="">Title</label>
-                    <StyledTitleInput $isInputError={!!errors.tasksTitle?.message}
-                        type="text"
-                        {...register("tasksTitle", {
+                    <StyledTitleInput $isInputError={!!errors.taskTitle?.message}
+                        {...register("taskTitle", {
                             required: "Required",
                             minLength: 1,
                             maxLength: 30
                         })}
+                        type="text"
                         placeholder="e.g. Take coffee break"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
-                    {errors.tasksTitle?.message && <StyledErrorMessage>{errors.tasksTitle?.message}</StyledErrorMessage>}
+                    {errors.taskTitle?.message && <StyledErrorMessage>{errors.taskTitle?.message}</StyledErrorMessage>}
+
                 </div>
                 <div>
                     <label htmlFor="">Description</label>
@@ -100,8 +94,6 @@ function NewTaskForm() {
                         rows={5}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="e.g. It’s always good to take a break. This 15 minute break will 
-recharge the batteries a little."
                     >
                         {description}
                     </textarea>
@@ -129,6 +121,7 @@ recharge the batteries a little."
                                     }}
                                 />
                                 {errors.subTasks?.[index]?.title && <StyledErrorMessage>{errors.subTasks[index]?.title?.message}</StyledErrorMessage>}
+
                                 <img
                                     src={RemoveIcon}
                                     onClick={() => removeSubtaskInput(index)}
@@ -155,14 +148,12 @@ recharge the batteries a little."
                     </StyledSelect>
                 </div>
                 <ButtonContainer>
-                    <Button submitFn={handleSubmit(submitFn)}>Create Task</Button>
+                    <Button submitFn={handleSubmit(submitFn)}>Save Changes</Button>
                 </ButtonContainer>
-            </StyledNewTaskForm>
+            </StyledEditTaskForm>
         </ModalWindow>
     );
 }
-
-export default NewTaskForm;
 
 const StyledErrorMessage = styled.p`
 margin-top: .3rem;
@@ -171,110 +162,116 @@ color:#EA5555;
     font-weight: 600;
 `
 const StyledTitleInput = styled.input < { $isInputError: boolean }>`
-border: ${({ $isInputError }) => $isInputError && "solid 1px #EA5555!important"};
+border: ${({ $isInputError }) => $isInputError && "solid 1px #EA5555 !important"};
 `
-const StyledNewTaskForm = styled.div<Props>`
-  & > div:nth-of-type(1) > label {
+
+const StyledEditTaskForm = styled.div<StyledProps>`
+
+& >div:nth-of-type(1)>label{
     margin-top: 2rem;
-  }
+}
 
-  & > div:nth-of-type(2) {
+& >div:nth-of-type(2){
     margin-top: 1rem;
-  }
-  textarea {
+}
+textarea{
     resize: none;
-  }
-
-  & input,
-  textarea {
+}
+& input, textarea{
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 1.3rem;
-  }
+font-size: 1.3rem;
+}
 
-  & input,
-  textarea {
+& input, textarea {
     width: 100%;
-    outline: none;
-    background-color: transparent;
-    padding: 1.1rem 1rem;
-    border: 1px solid #828fa340;
-    border-radius: 0.4rem;
-  }
-  input[type="text"]:focus {
-    border-color: #635fc7;
-    border-width: 0.1rem;
-  }
-`;
+    outline: none
+    ;
+    background-color:transparent;
+    padding:1.1rem 1rem;
+    border: 1px solid #828FA340;
+    border-radius:0.4rem;
+ ;
+}
+& input[type="text"]:focus {
+  border-color: #635fc7; 
+  border-width: .1rem;
+}
+    
+`
 
-const SubtasksContainer = styled.div<Props>`
-  margin: 1rem 0;
-  /* display: flex; */
+const SubtasksContainer = styled.div<StyledProps>`
+margin: 1rem 0;
+/* display: flex; */
 
-  & > div > div {
+& > div > div{
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
     align-items: center;
-  }
+}
 
-  & > div input {
+& > div input{
     width: 90%;
-  }
+}
 
-  & img {
+& img{
     width: 2rem;
     cursor: pointer;
-  }
-  & > div {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+}
+    &>div{
+        display: flex;
+        flex-direction: column;
+        gap:1rem;
+    }
 
-`;
+`
+
 const ButtonContainer = styled.div`
-  margin: 2rem 0 1rem 0;
-`;
+    margin: 1rem 0;
+`
 
-const StyledSelect = styled.div<Props>`
-  position: relative;
-  z-index: 19;
+const StyledSelect = styled.div<StyledProps>`
+position: relative;
+z-index: 19;
 
-  & img {
-    cursor: pointer;
+ & img {
+cursor: pointer;
     position: absolute;
     transform: translate(-50%, -50%);
     top: 50%;
     left: 95%;
     z-index: 1;
-  }
-  & select {
+ }
+& select{
     position: relative;
     z-index: 2;
     width: 100%;
     background-color: transparent;
-    border: 1px solid #828fa340;
-    border-radius: 0.4rem;
+    border: 1px solid #828FA340;
+    border-radius:0.4rem;
     padding: 1.1rem 1rem;
     outline: none;
     appearance: none;
     -webkit-appearance: none; 
     -moz-appearance: none; 
-    color: ${(props) => (props.$isDarkMode ? "#FFF" : "#000112")};
-    cursor: pointer;
-  }
+   color: ${props => props.$isDarkMode ? "#FFF" : "#000112"}; 
+   cursor: pointer;
+}
 
-  & option {
-    color: #828fa340;
+& option {
+    color: #828FA340;
     padding: 1rem;
-  }
+}
 
-  & select > option {
-    background-color: #2b2c37;
-    padding: 1rem;
-  }
 
-  & optgroup {
+& select >option{
+    background-color: #2B2C37;
+    padding:1rem
+}
+
+& optgroup{
     padding: 1rem;
-  }
-`;
+}
+`
+
+export default EditTask

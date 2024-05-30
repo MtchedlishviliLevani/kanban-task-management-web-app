@@ -5,18 +5,21 @@ interface Initial {
 }
 
 const initialState: Initial = {
-  isOpenSide: true,
+  isOpenSide: false,
 };
 
 const asideSlice = createSlice({
   name: "aside",
   initialState,
   reducers: {
-    hideAside: (state) => {
+    toggleAside: (state) => {
       state.isOpenSide = !state.isOpenSide;
+    },
+    hideAside: (state) => {
+      state.isOpenSide = false;
     },
   },
 });
 
-export const { hideAside } = asideSlice.actions;
+export const { toggleAside, hideAside } = asideSlice.actions;
 export default asideSlice.reducer;

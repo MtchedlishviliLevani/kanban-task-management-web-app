@@ -9,35 +9,33 @@ import DarkLogo from "../images/logo-dark.svg";
 import LightLogo from "../images/logo-light.svg"
 import { useAppDispatch, useAppSelector } from "../../app/hook";
 import Container from "./Container";
-// import useData from "../../store/useBoard";
 import theme from "../../styles/Theme";
-import { hideAside } from "../../features/asideSlice";
-import { toggleOverlay } from "../../features/boardSlice";
+import { toggleAside } from "../../features/asideSlice";
+import { } from "../../features/boardSlice";
+import BoardAction from "./BoardAction";
+import { toggleBoardActions, toggleNewTaskForm, toggleOverlay } from "../../features/modalSlice";
 
 interface StyledProps {
     $isDarkMode?: boolean;
-
 }
 
 function Header() {
-
-    // const { toggleIsOpenSide, shownOverlay, isShownOverlay } = useData();
-    // function handle() {
-    //     toggleIsOpenSide(),
-    //         shownOverlay()
-    // }
-    const dispatch = useAppDispatch()
-
-    function handle() {
-        dispatch(hideAside()),
-            dispatch(toggleOverlay())
+    const dispatch = useAppDispatch();
+    function handleAside() {
+        dispatch(toggleAside())
+        dispatch(toggleOverlay())
     }
     const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode);
-    const isShownOverlay = useAppSelector(state => state.boardReducer.isOverlayed);
-    // active dataJSon index
+    const isShownOverlay = useAppSelector(state => state.modalReducer.isOverlayed);
     const activeIndex = useAppSelector(state => state.boardReducer.activeIndex)
     const data = useAppSelector(state => state.boardReducer.data)
-    const activeColumnName = data.boards[activeIndex].name
+    const boardsAmount = data.boards.length
+    const activeColumnName = data.boards[activeIndex]?.name
+    const isOpenBoardActions = useAppSelector((state) => state.modalReducer.isOpenBoardAction)
+    function openTaskForm() {
+        dispatch(toggleNewTaskForm()),
+            dispatch(toggleOverlay())
+    }
     return (
         <>
             <Container >
@@ -54,22 +52,26 @@ function Header() {
                             </picture></div>
                         <MainPartWrapper $isDarkMode={isDarkMode}>
                             <div>
-                                <span>{activeColumnName}</span>
+                                <span>{boardsAmount > 0 ? activeColumnName : "No Board Found"
+                                }</span>
                                 <img
-                                    onClick={() => handle()} src={DropDownIcon} style={{ transform: isShownOverlay ? "rotate(180deg)" : undefined }}
+                                    onClick={() => handleAside()} src={DropDownIcon} style={{ transform: isShownOverlay ? "rotate(180deg)" : "rotate(0deg)" }}
 
                                     alt="" />
                             </div>
-                            <div>
-                                <AddBtnContainer>
-                                    <img src={AddTaskIcon} alt="" /> <span>Add New Task</span>
+                            {boardsAmount > 0 &&
+                                <div>
+                                    <AddBtnContainer onClick={openTaskForm}>
+                                        <img src={AddTaskIcon} alt="" /> <span>Add New Task</span>
 
-                                </AddBtnContainer>
-                                <img src={EditIcon} alt="" />
-                            </div></MainPartWrapper>
+                                    </AddBtnContainer>
+                                    <EditIconContainer onClick={() => dispatch(toggleBoardActions())}><img src={EditIcon} alt="" /></EditIconContainer>
+                                    {isOpenBoardActions && <BoardAction />}
+                                </div>}</MainPartWrapper>
                     </HEader>
                 </div >
             </Container>
+
             <BorderLine $isDarkMode={isDarkMode}></BorderLine>
         </>
     );
@@ -98,8 +100,12 @@ const HEader = styled.header<StyledProps>`
         border-right: 1px solid; 
         border-right-color: ${({ $isDarkMode }) => $isDarkMode ? theme.allColors.themeColor.darkMode.borderColor : theme.allColors.themeColor.lightMode.borderColor};
         }
+    }
 
-
+    &>div:nth-child(2){
+        &>div:nth-child(2){
+            position: relative;
+        }
     }
      & img{
         cursor: pointer;
@@ -142,7 +148,7 @@ const MainPartWrapper = styled.div<StyledProps>`
 
     &>div:nth-child(2){
         display: flex;
-        gap: 20px;
+        gap: 1rem;
         align-items: center;
     }
 
@@ -169,7 +175,14 @@ const MainPartWrapper = styled.div<StyledProps>`
         font-weight: bold;
     }
 `
-
+const EditIconContainer = styled.div`
+padding: 1rem;
+border-radius: 0.8rem;
+cursor: pointer;
+    &:hover{
+        background-color: #E4EBFA;
+    }
+`
 export default Header;
 
 

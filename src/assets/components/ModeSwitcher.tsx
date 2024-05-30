@@ -1,19 +1,15 @@
-// import React from 'react'
 import styled from 'styled-components'
 import lightIcon from "../images/icon-light-theme.svg"
 import darkIcon from "../images/icon-dark-theme.svg"
 import { useAppDispatch, useAppSelector } from '../../app/hook'
 import { changeMode } from '../../features/switchModeSlice'
-// import useData from '../../store/useBoard'
 
 interface SwtichModeProps {
     $isDarkMode: boolean;
 }
 function ModeSwitcher() {
-    // const { isDarkMode, modeSwitcher } = useData()
     const isDarkMode = useAppSelector(state => state.switchModeReducer.isDarkMode)
     const dispatch = useAppDispatch()
-    console.log(isDarkMode, 8098)
 
     return (
         <SwitchModeContainer $isDarkMode={isDarkMode}>
@@ -48,7 +44,6 @@ transition: left .7s;
     }
 `
 const SwitchModeContainer = styled.div<SwtichModeProps>`
-    
     border-radius: 1.2rem;
     display: flex;
     justify-content: center;

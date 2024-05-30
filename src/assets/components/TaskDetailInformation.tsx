@@ -1,81 +1,168 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hook"
 import styled from "styled-components";
 import EditSVG from "../images/icon-vertical-ellipsis.svg"
-import { changeColumn, checkBox } from "../../features/boardSlice";
+import { checkBox, moveTask } from "../../features/boardSlice";
 import ModalWindow from "./ModalWindow";
+import CheckIcon from "../images/icon-check.svg"
+import TaskActions from "./TaskActions";
+import { toggleOverlay, toggleTaskAction, toggleTaskDetailInfo } from "../../features/modalSlice";
 
-export default function TaskDetailInformation({ activeIndex1, activeColumnName }: { activeIndex1: number, activeColumnName: string }) {
-    console.log(activeIndex1)
+interface Props {
+    $isDarkMode: boolean
+}
+// toggleOverlay, toggleTaskAction, toggleTaskDetailInfo
+
+export default function TaskDetailInformation({ activeTaskIndex, activeColumnName }: { activeTaskIndex: number, activeColumnName: string }) {
     const dispatch = useAppDispatch()
     const activeIndex = useAppSelector(state => state.boardReducer.activeIndex)
     const data = useAppSelector(state => state.boardReducer.data.boards[activeIndex].columns);
-    const foundColumn = data.filter((value) => value.name == activeColumnName)[0]?.tasks[activeIndex1]
-    console.log(data.filter((value) => value.name == activeColumnName))
-    const filteredSubtaskNumber = foundColumn?.subtasks.filter((value) => value.isCompleted === true).length
+    const foundColumn = data.filter((value) => value?.name == activeColumnName)[0]?.tasks[activeTaskIndex]
+    const filteredSubtaskNumber = foundColumn?.subtasks?.filter((value) => value?.isCompleted === true).length
     const subtaskLength = foundColumn?.subtasks.map((value) => value).length
     const [status, setStatus] = useState("")
-
-
-    const data1 = useAppSelector(state => state.boardReducer.data);
-    console.log(data1.boards[activeIndex].columns, 'dt1')
-
-    const columnIndex = data1.boards[activeIndex].columns.findIndex((value) => value.name === status)
-    console.log(status)
-
-    console.log(columnIndex)
-    const sourceIndex = data.findIndex((value) => value.tasks[activeIndex1]?.title == foundColumn?.title)
-
-    console.log(status)
-
+    const isDarkMode = useAppSelector((state) => state.switchModeReducer.isDarkMode)
+    const sourceIndex = data?.findIndex((value) => value?.tasks[activeTaskIndex]?.title == foundColumn?.title)
+    const isOpenTaskAction = useAppSelector((state) => state.modalReducer.isOpenTaskAction)
 
     useEffect(() => {
         if (foundColumn?.status) {
             setStatus(activeColumnName)
         }
     }, [foundColumn?.status, activeColumnName])
-    console.log(status, activeColumnName)
 
-    function handleSelect(e) {
+    function handleSelect(e: ChangeEvent<HTMLSelectElement>) {
         const newStatus = e.target.value;
-        setStatus(newStatus); // Update the status state first
-        dispatch(changeColumn({ sourceIndex, activeIndex1, status: newStatus, activeColumnName, }))
-        console.log(data)
-
+        setStatus(newStatus);
+        dispatch(moveTask({ sourceIndex, activeTaskIndex, status: newStatus, activeColumnName, }))
+        dispatch(toggleTaskDetailInfo())
+        dispatch(toggleOverlay())
     }
 
+
     return (
-        <ModalWindow>
-            <StyledCard>
-                <TitleIconContainer><h2>{foundColumn?.title}</h2><img src={EditSVG} alt="" /></TitleIconContainer>
-                <div><p>{foundColumn?.description}</p></div>
+        <>{foundColumn &&
+            <StyledContainer>
+                <ModalWindow>
+                    {isOpenTaskAction && <TaskActions />}
+                    <StyledCard $isDarkMode={isDarkMode}>
+                        <TitleIconContainer><h2>{foundColumn?.title}</h2><img onClick={() => dispatch(toggleTaskAction())} src={EditSVG} alt="" /></TitleIconContainer>
+                        <div><p>{foundColumn?.description}</p></div>
+                        <SubtaskContainer $isDarkMode={isDarkMode} ><h3>Subtasks ({filteredSubtaskNumber} of {subtaskLength})</h3>{foundColumn?.subtasks.map((value, index) => <div key={index}><div><CheckBox type="checkbox" checked={value?.isCompleted} onChange={() => dispatch(checkBox({ activeColumnName, activeTaskIndex, checkIndex: index }))} /><span>{value?.title}</span> </div></div>)}</SubtaskContainer>
+                        <StatusContainer $isDarkMode={isDarkMode}><h3>Current status</h3> <select value={status} onChange={handleSelect} >{data?.map((status1, index) => <option key={index} >{status1.name}</option>)}</select></StatusContainer>
 
-                <div>subtask ({filteredSubtaskNumber} of {subtaskLength}){foundColumn?.subtasks.map((value, index) => <div key={index}><input type="checkbox" checked={value?.isCompleted} onChange={() => dispatch(checkBox({ activeColumnName, activeIndex1, checkIndex: index }))} /> {value?.title}</div>)}</div>
-                <div><h3>current states</h3> <select value={status} onChange={handleSelect} >{data.map((status1, index) => <option key={index} >{status1.name}</option>)}</select></div>
 
-
-
-            </StyledCard></ModalWindow>
+                    </StyledCard></ModalWindow></StyledContainer>}</>
     )
 }
 
-
-const StyledCard = styled.div`
-/* padding: 1rem;
-/* display: none; */
-/* background-color: white;
-    width: 34rem;
-    height: 40rem;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%);  */
+const StyledContainer = styled.div`
+top: 0% !important;
+    
 `
 
+const StyledCard = styled.div<Props>`
+    & p {
+        font-size: 1.3rem;
+        color: #828FA3;
+        font-weight: 500;
+        margin-top: 1.5rem;
+        line-height: 2.2rem;
+    }
+
+    & h3{
+        color: ${({ $isDarkMode }) => $isDarkMode ? "#FFF" : "#828FA3"};
+        font-weight:700; 
+        font-size: 1.2rem;
+    }   
+`
+const SubtaskContainer = styled.div<Props>`
+margin-top: 1.5rem;
+
+& div{
+    div:hover{
+       background-color: rgba(99,95,199,.25)
+    }
+    div{
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        background-color: ${({ $isDarkMode }) => $isDarkMode ? "#20212C" : "#F4F7FD"};
+        padding: 1rem;
+        border-radius: .8rem;
+
+& span{
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: ${({ $isDarkMode }) => $isDarkMode ? "#FFF" : "#000"};
+}
+        & input {
+            width: initial;
+        }
+    }
+}
+
+`
+
+const StatusContainer = styled.div<Props>`
+margin-top: 2rem;
+
+& h3 {
+    margin-bottom: .4rem;
+}
+
+& select{
+    background-color:inherit ;
+    padding: .5rem;
+    outline: none;
+    cursor: pointer;
+    color:${({ $isDarkMode }) => $isDarkMode ? "#FFF" : "#000"};
+    width:100%;
+}
+`
+
+const CheckBox = styled.input`
+ position: relative;
+ appearance: none; 
+  -webkit-appearance: none; 
+  -moz-appearance: none; 
+  width: 1.2rem;
+  height: 1.6rem;
+  outline: none; 
+  padding: .7rem !important;
+  border-radius: 0.2rem !important;
+  background-color: white;
+  cursor: pointer;
+
+  &::before{
+    content: "";
+    background-image: url(${CheckIcon});
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: .9rem;
+    height: .7rem;
+    background-repeat: no-repeat;
+    background-size: cover;
+    visibility: hidden; 
+  }
+  &:checked{
+    background-color: #635fc7;
+  }
+  &:checked::before {
+    visibility: visible;
+  }
+
+& + span {
+    text-decoration: ${({ checked }) => checked && "line-through"};
+    opacity: ${({ checked }) => checked && "50%"};
+  }
+`
 const TitleIconContainer = styled.div`
     display: flex;
     justify-content: space-between;
-
+    align-items: center;
     & img{
         cursor: pointer;
     }
