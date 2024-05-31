@@ -151,6 +151,7 @@ const StyledEmptyBoard = styled.div<{ $isDarkMode: boolean }>`
     &>p{
       font-size: 1.6rem;
       color: ${({ $isDarkMode }) => $isDarkMode ? "#fff" : "#000"};
+      text-align: center;
     }
 
     &>div{

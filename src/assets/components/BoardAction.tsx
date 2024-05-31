@@ -3,7 +3,7 @@ import { useAppSelector } from "../../app/hook"
 import { useDispatch } from "react-redux"
 import { useEffect, useRef, useState } from "react"
 import { toggleBoardActions, toggleDeleteBoardModal, toggleNewColumn, toggleOverlay } from "../../features/modalSlice"
-
+import breakPoints from "../utility/BreakPoints"
 interface StyledProps {
     $isDarkMode: boolean
 }
@@ -53,15 +53,25 @@ function BoardAction() {
 const StyledContainer = styled.div<StyledProps>`
 position: absolute;
 z-index: 2;
-width: calc(100% - 0.5rem);
+padding: 1rem;
+width: 15rem;
 top: 5rem;
-left: 0rem;
+right: -1rem;
 border-radius: .8rem;
 display: flex;
 flex-direction: column;
 gap: 1rem;
-padding: 1.5rem;
+
 background-color:${({ $isDarkMode }) => $isDarkMode ? "#20212C" : "#FFF"};
+${breakPoints.md}{
+    left: 2rem;
+    top: 5.5rem;
+    right: initial;
+    padding: 1.5rem;
+    width: calc(100% - 0.5rem);
+
+}
+
 &>button {
     all: unset;
     font-size: 1.6rem;

@@ -50,6 +50,7 @@ font-weight: bold;
     padding:1.1rem 1rem;
     border: 1px solid #828FA340;
     border-radius:0.4rem;
+background-color: transparent;
  
 }
 `
