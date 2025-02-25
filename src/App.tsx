@@ -16,7 +16,7 @@ import DeleteTask from './assets/components/DeleteTask'
 import TaskDetailInformation from './assets/components/TaskDetailInformation'
 import EditTask from './assets/components/EditTask'
 import EditBoard from './assets/components/EditBoard'
-import { hideOverlay, openOverlay, toggleAddNewBoard, toggleDeleteBoardModal, toggleEditTask, toggleNewColumn, toggleNewTaskForm, toggleOverlay, toggleTaskDetailInfo } from './features/modalSlice'
+import { toggleAddNewBoard, toggleDeleteBoardModal, toggleEditTask, toggleNewColumn, toggleNewTaskForm, toggleOverlay, toggleTaskDetailInfo } from './features/modalSlice'
 import { toggleAside } from './features/asideSlice'
 
 interface HeaderProps {
@@ -80,13 +80,6 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (width > 768 && isOpenAside) {
-      dispatch(hideOverlay())
-    } else if (isOpenAside) {
-      dispatch(openOverlay())
-    }
-  }, [width, dispatch, isOpenAside, isOpenNewTaskForm]);
 
   return (
 

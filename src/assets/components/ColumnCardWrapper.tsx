@@ -25,9 +25,8 @@ interface Props {
     },
     setTaskActiveIndex: React.Dispatch<React.SetStateAction<number>>,
     setActiveColumn: React.Dispatch<React.SetStateAction<string>>
-
 }
-function Card({ columnsName, setTaskActiveIndex, setActiveColumn }: Props) {
+function ColumnCardWrapper({ columnsName, setTaskActiveIndex, setActiveColumn }: Props) {
     const dispatch = useDispatch()
 
     function handleDetailInfo(i: number, name: string) {
@@ -35,46 +34,27 @@ function Card({ columnsName, setTaskActiveIndex, setActiveColumn }: Props) {
         dispatch(toggleOverlay());
     }
     const isDarkMode = useAppSelector((state) => state.switchModeReducer.isDarkMode)
+
+    console.log(columnsName?.tasks)
     return (
         <CardWrapper>
-            {
-                columnsName?.tasks && columnsName?.tasks.length > 0 && (
-                    Object.keys(columnsName.tasks[0]).length === 0
-                        ? columnsName.tasks.slice(1).map((task, i) => (
-                            <CardStyled
-                                key={i}
-                                $isDarkMode={isDarkMode}
-                                onClick={() => handleDetailInfo(i, columnsName?.name)}
-                            >
-                                <h2>{task?.title}</h2>
-                                <span>
-                                    {task?.subtasks?.reduce(
-                                        (sum, subtask) => sum + (subtask?.isCompleted ? 1 : 0),
-                                        0
-                                    )}{" "}
-                                    of {task?.subtasks?.length} subtasks
-                                </span>
-                            </CardStyled>
-                        ))
-                        : columnsName.tasks.map((task, i) => (
-                            <CardStyled
-                                key={i}
-                                $isDarkMode={isDarkMode}
-                                onClick={() => handleDetailInfo(i, columnsName?.name)}
-                            >
-                                <h2>{task?.title}</h2>
-                                <span>
-                                    {task?.subtasks?.reduce(
-                                        (sum, subtask) => sum + (subtask?.isCompleted ? 1 : 0),
-                                        0
-                                    )}
-                                    of {task?.subtasks?.length} subtasks
-                                </span>
-                            </CardStyled>
-                        ))
-                )
-            }
+            {columnsName?.tasks?.map((task, i) => (
 
+                <CardStyled
+                    key={i}
+                    $isDarkMode={isDarkMode}
+                    onClick={() => handleDetailInfo(i, columnsName?.name)}
+                >
+                    <h2>{task?.title}</h2>
+                    <span>
+                        {task?.subtasks?.reduce(
+                            (sum, subtask) => sum + (subtask?.isCompleted ? 1 : 0),
+                            0
+                        )}
+                        of {task?.subtasks?.length} subtasks
+                    </span>
+                </CardStyled>
+            ))}
         </CardWrapper>
     )
 }
@@ -115,4 +95,4 @@ const CardStyled = styled.div<Card>`
     color: #828fa3;
   }
 `;
-export default Card
+export default ColumnCardWrapper

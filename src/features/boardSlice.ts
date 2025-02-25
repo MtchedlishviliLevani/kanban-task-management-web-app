@@ -1,13 +1,63 @@
 import { createSlice } from "@reduxjs/toolkit";
 import data from "../data.json";
+import { v4 as uuidv4 } from "uuid"; // Import the uuid library
+
+interface Subtask {
+  id?: string;
+  title: string;
+  isCompleted: boolean;
+}
+
+interface Task {
+  id?: string;
+  title: string;
+  description: string;
+  status: string;
+  subtasks: Subtask[];
+}
+
+interface Column {
+  id?: string;
+  name: string;
+  tasks: Task[];
+}
+
+interface Board {
+  id?: string;
+  name: string;
+  columns: Column[];
+}
+
+interface Data {
+  boards: Board[];
+}
 
 interface Initial {
-  data: typeof data;
+  data: Data;
   activeIndex: number;
 }
 
+const addIdsToData = (data: Data) => {
+  return data.boards.map((board) => ({
+    ...board,
+    id: uuidv4(),
+    columns: board.columns.map((column) => ({
+      ...column,
+      id: uuidv4(),
+      tasks: column.tasks.map((task) => ({
+        ...task,
+        id: uuidv4(),
+        subtasks: task.subtasks.map((subtask) => ({
+          ...subtask,
+          id: uuidv4(),
+        })),
+      })),
+    })),
+  }));
+};
+
 const initialState: Initial = {
-  data,
+  data: { boards: addIdsToData(data) },
   activeIndex: 0,
 };
 
@@ -37,9 +87,13 @@ const boardSlice = createSlice({
       const { newColumns } = action.payload;
       state.data.boards[state.activeIndex].columns = newColumns;
     },
+    dragAndDropFn: (state, action) => {
+      const { activeIndex } = state;
+      state.data.boards[activeIndex] = action.payload;
+    },
 
     addTaskValues: (state, action) => {
-      const { title, description, status, subTasks } = action.payload;
+      const { title, description, status, subTasks, id } = action.payload;
       const columnIndex = state.data.boards[
         state.activeIndex
       ].columns.findIndex((column) => column.name === status);
@@ -53,6 +107,7 @@ const boardSlice = createSlice({
         }
 
         tasks.push({
+          id,
           title,
           description,
           status: status || "default status",
@@ -115,8 +170,8 @@ const boardSlice = createSlice({
       state.data.boards[state.activeIndex].name = boardName;
     },
     addNewBoard: (state, action) => {
-      const { name, columns } = action.payload;
-      state.data.boards.push({ name, columns });
+      const { name, columns, id } = action.payload;
+      state.data.boards.push({ name, columns, id });
     },
     boardDelete: (state) => {
       state.data.boards = state.data.boards.filter(
@@ -137,5 +192,6 @@ export const {
   addTaskValues,
   setActiveIndex,
   saveColumnName,
+  dragAndDropFn,
 } = boardSlice.actions;
 export default boardSlice.reducer;

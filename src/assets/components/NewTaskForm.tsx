@@ -13,6 +13,7 @@ import ModalWindow from "./ModalWindow";
 import Button from "./Button";
 import Button2 from "./Button2";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
     $isDarkMode: boolean;
@@ -51,8 +52,9 @@ function NewTaskForm() {
             },
         ]);
     };
+    const generateId = uuidv4()
     function submitFn() {
-        dispatch(addTaskValues({ title, description, status: todo, subTasks }));
+        dispatch(addTaskValues({ id: generateId, title, description, status: todo, subTasks }));
         setTitle("");
         setDescription("");
         setSubTasks([
